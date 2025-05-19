@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Categorization Interface</title>
+    <link rel="stylesheet" href="https://use.typekit.net/xpd8qyz.css" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script>
+      let exampleIndex = 0;
+      const exampleSentences = [
+        "I'm an international student from a working-class background, and despite applying for every available scholarship, I’m still unable to cover my tuition fees. My family’s financial situation has worsened recently, and I’m worried that I might have to drop out. The university’s financial aid office keeps redirecting me to external organizations, but none of them seem to cover non-EU students like me.",
+        "As an Asian student in a predominantly white academic environment, I’ve started to notice subtle but persistent exclusion. In group projects, my ideas are often ignored until a European student repeats them. During discussions, my accent is sometimes mocked or imitated. I’m not sure if this qualifies as outright racism, but it has made me feel alienated and anxious about speaking up in class.",
+        "As someone diagnosed with ADHD, I struggle with time management during exams. The current scheduling forces me to take back-to-back exams with little recovery time, even though I have a medical note requesting accommodations. I’ve tried reaching out to the disability services office, but they told me that 'policy applies to everyone equally' and that making changes would be unfair to other students. I feel like my needs as a neurodivergent student are being dismissed.",
+        "As a non-EU student, I’ve been struggling with my visa renewal process. The international office keeps giving me conflicting information, and I recently learned that my paperwork was misplaced, delaying my application. I know other European students in similar situations who had their issues resolved quickly, while I keep being told to 'just wait.' If my visa isn’t approved soon, I might be forced to leave before the semester ends.",
+        "I’ve noticed that our professor consistently gives more opportunities to Dutch and German students, offering them research assistant positions and internships through their personal connections. As a student from the Middle East, I’ve tried to apply for the same positions but was subtly discouraged. A classmate (who happens to be European) told me that they were directly invited to apply. It feels like non-EU students are being sidelined when it comes to career opportunities.",
+        "As a Black international student, I’ve faced multiple rejections while searching for housing. I applied to several student accommodations and shared apartments, only to be told 'the room has already been taken'—only to later see new listings for the same place. A Dutch classmate applied to the same property after me and got an immediate response. It feels like landlords prefer renting to European students, making it nearly impossible for people like me to find a decent place to live.",
+        "Ever since moving into my dorm, I’ve noticed that certain students purposely exclude me from group activities. They make inside jokes in Dutch, knowing I don’t understand, and ignore me when I try to join in conversations. I even overheard someone saying that ‘foreigners don’t belong in our dorm.’ It’s becoming increasingly uncomfortable to stay here, and I don’t know how to address it.",
+        "During a class debate, a group of students kept interrupting and talking over me, dismissing my points with comments like ‘you wouldn’t understand, it’s a European issue.’ When I tried to push back, one of them said, ‘Why do you even care? You’re not from here.’ It’s frustrating to feel like my voice isn’t valued just because I come from a different background.",
+        "The student association I wanted to join has a predominantly Dutch membership. When I reached out, I was told that their events are 'mainly for locals' and that I might not fit in because of the language barrier. But I know for a fact that another international student from Germany joined without an issue. It feels like non-Western internationals are being subtly discouraged from participating.",
+        "I was assigned a group project with three local students. From the beginning, they kept discussing everything in Dutch, even though our university policy states that all communication should be in English. When I reminded them, they acted annoyed and continued excluding me from decision-making. In the end, they submitted the project without incorporating any of my work.",
+      ];
+      let typingTimeout;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const inputBox = document.getElementById("userInput");
+
+        inputBox.addEventListener("keydown", function (event) {
+          if (event.key === "Tab") {
+            event.preventDefault(); // 기본 Tab 동작 방지
+            if (exampleIndex >= exampleSentences.length) exampleIndex = 0;
+            startTypingEffect(exampleSentences[exampleIndex], inputBox);
+            exampleIndex++;
+          }
+        });
+      });
+
+      function startTypingEffect(text, element) {
+        clearTimeout(typingTimeout);
+        element.textContent = ""; // 기존 입력 지우기
+        let index = 0;
+
+        function typeNextChar() {
+          if (index < text.length) {
+            element.textContent += text[index]; // ✅ textContent로 변경하여 띄어쓰기 유지
+            index++;
+            typingTimeout = setTimeout(typeNextChar, 50); // 50ms마다 한 글자씩 입력
+          }
+        }
+        typeNextChar();
+      }
+
+      async function submitQuestion() {
+        const userInput = document.getElementById("userInput").innerText.trim();
+        if (!userInput) {
+          alert("Please enter your concern!");
+          return;
+        }
+
+        const resultBox = document.getElementById("result");
+        resultBox.innerHTML = ""; // 기존 결과 지우기
+
+        // 5초 동안 로딩 메시지 출력 (터미널 스타일)
+        let loadMessages = [
+          `[INFO] Initializing AI model...`,
+          `[SYSTEM] Loading dataset... (ID: ${generateRandomID()})`,
+          `[LOG] Establishing secure connection to api.openai.com:${getRandomPort()}...`,
+          `[DEBUG] Tokenizing input with SHA256 hash: ${generateRandomHash()}`,
+          `[INFO] Analyzing sentence structure...`,
+          `[PROCESS] Checking predefined categories...`,
+          `[VERIFICATION] Validating context with refID=${generateRandomID()}`,
+          `[AI] Running neural network model on port ${getRandomPort()}...`,
+          `[SECURITY] Ensuring data confidentiality (Session ID: ${generateRandomBase64()})`,
+          `[DEBUG] Refining output...`,
+          `[SYSTEM] Fetching API results from https://api.openai.com/v1/models/gpt-4o`,
+          `[INFO] Almost done...`,
+          `[FINALIZE] Completing analysis...`,
+          `[SUCCESS] Processing complete. Output stored at /var/logs/${generateRandomID()}.log`,
+        ];
+
+        let loadIndex = 0;
+
+        function showLoading() {
+          if (loadIndex < loadMessages.length) {
+            const newMessage = document.createElement("div");
+            newMessage.innerText = loadMessages[loadIndex];
+            resultBox.appendChild(newMessage);
+            loadIndex++;
+
+            let randomDelay = Math.floor(Math.random() * 1000); // 0~1000ms 랜덤 딜레이
+            setTimeout(showLoading, randomDelay);
+          } else {
+            categorizeInput(); // 카테고리 확인 시작
+          }
+        }
+
+        showLoading();
+
+        // ✅ 랜덤 숫자, 해시, ID, 포트 번호 생성 함수들
+        function generateRandomID() {
+          return Math.random().toString(36).substring(2, 10).toUpperCase();
+        }
+
+        function getRandomPort() {
+          return Math.floor(3000 + Math.random() * 3000); // 3000~6000 사이 포트 번호
+        }
+
+        function generateRandomHash() {
+          const chars = "abcdef0123456789";
+          let hash = "";
+          for (let i = 0; i < 64; i++) {
+            hash += chars[Math.floor(Math.random() * chars.length)];
+          }
+          return hash;
+        }
+
+        function generateRandomBase64() {
+          const chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+          let base64 = "";
+          for (let i = 0; i < 16; i++) {
+            base64 += chars[Math.floor(Math.random() * chars.length)];
+          }
+          return base64;
+        }
+
+        function showLoading() {
+          if (loadIndex < loadMessages.length) {
+            const newMessage = document.createElement("div");
+            newMessage.innerText = loadMessages[loadIndex];
+            resultBox.appendChild(newMessage);
+            loadIndex++;
+
+            let randomDelay = Math.floor(Math.random() * 1000); // 0~1000ms 랜덤 딜레이
+            setTimeout(showLoading, randomDelay);
+          } else {
+            categorizeInput(); // 카테고리 확인 시작
+          }
+        }
+
+        showLoading();
+
+        async function categorizeInput() {
+          try {
+            const response = await fetch("http://127.0.0.1:5000/categorize", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: userInput }),
+            });
+
+            if (!response.ok)
+              throw new Error(`HTTP error! status: ${response.status}`);
+
+            const result = await response.json();
+            resultBox.innerHTML = ""; // 기존 메시지 삭제 후 카테고리 출력
+
+            const categoryText = `<strong>Category:</strong> ${result.category}`;
+            const subCategoryText = result.subcategory
+              ? `<br><strong>Subcategory:</strong> ${result.subcategory}`
+              : "";
+
+            resultBox.innerHTML = categoryText + subCategoryText;
+          } catch (error) {
+            console.error("Error:", error);
+            resultBox.innerText = "Error occurred: " + error;
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h2>AI Categorization Terminal</h2>
+
+      <div class="input-box" id="userInput" contenteditable="true">
+        Type your concern here...
+      </div>
+
+      <button onclick="submitQuestion()">Check Category</button>
+
+      <div id="result"></div>
+
+      <div class="categories">
+        <h3>Categories AI Can Classify</h3>
+        <p>
+          Abuse, Alcohol, Assessment, Bullying, Confidential, Conflict of
+          Interest, Consensual, Discrimination, Drugs, Examination, Executive
+          Board, Fraud, Gift, Gossip, Harassment, Invitation, Language, Power,
+          Privacy, Procurement, Racism, Relationship, Religion, Report, Sexual,
+          Staff, Supplier, Theft, Threats, Violation, Violence, Ethnicity, Race,
+          Class, Tuition Fee, Gender, Ability, Neurodiversity, Dutch Culture,
+          Sexuality.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
