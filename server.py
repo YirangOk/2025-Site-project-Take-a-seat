@@ -93,7 +93,6 @@ def categorize_text(user_input):
 
 @app.route("/categorize", methods=["POST"])
 def categorize():
-    """✅ API Endpoint for Text Categorization"""
     try:
         data = request.get_json()
         user_input = data.get("text", "")
@@ -105,7 +104,6 @@ def categorize():
         if category == "Error":
             return jsonify({"error": "OpenAI API request failed."}), 500
 
-        # ✅ If New Report is Required, return a random administrative message
         if is_new_report:
             admin_response = random.choice(NEW_REPORT_RESPONSES)
             return jsonify({"category": category, "message": admin_response})
@@ -115,7 +113,7 @@ def categorize():
     except Exception as e:
         import traceback
         print(f"🚨 Flask Server Error: {e}")
-        traceback.print_exc()  # 전체 에러 스택 트레이스 출력
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
