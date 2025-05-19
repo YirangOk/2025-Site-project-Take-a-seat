@@ -191,6 +191,7 @@ button {
   cursor: text;
   background: white;
   outline: none;
+  overflow: hidden;
 }
 
 .input-box:focus {
@@ -208,6 +209,7 @@ button:hover {
   border: 2px solid var(--sub-color);
   margin-top: 20px;
   height: 30%;
+  overflow: scroll;
 }
 
 .categories {
