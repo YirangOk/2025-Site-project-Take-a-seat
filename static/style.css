@@ -158,7 +158,7 @@ h1 {
 }
 
 h2 {
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .container {
@@ -169,6 +169,8 @@ h2 {
   flex-direction: column;
   border: 3px solid var(--sub-color);
   padding: 20px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 button {
@@ -184,6 +186,7 @@ button {
 }
 
 .input-box {
+  margin-top: 1rem;
   padding: 10px;
   border: 2px solid var(--sub-color);
   min-height: 40px;
@@ -216,4 +219,6 @@ button:hover {
   border-top: 3px dashed var(--sub-color);
   margin-top: 20px;
   padding-top: 10px;
+  font-size: 0.75rem;
+  color: grey;
 }

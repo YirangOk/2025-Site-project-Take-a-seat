@@ -7,6 +7,8 @@
   <title>AI Categorization Interface</title>
   <link rel="stylesheet" href="https://use.typekit.net/xpd8qyz.css" />
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="stylesheet" href="/static/style.css" />
+
   <script>
     let exampleIndex = 0;
     const exampleSentences = [
@@ -67,15 +69,9 @@
         `[SYSTEM] Loading dataset... (ID: ${generateRandomID()})`,
         `[LOG] Establishing secure connection to api.openai.com:${getRandomPort()}...`,
         `[DEBUG] Tokenizing input with SHA256 hash: ${generateRandomHash()}`,
-        `[INFO] Analyzing sentence structure...`,
-        `[PROCESS] Checking predefined categories...`,
         `[VERIFICATION] Validating context with refID=${generateRandomID()}`,
         `[AI] Running neural network model on port ${getRandomPort()}...`,
         `[SECURITY] Ensuring data confidentiality (Session ID: ${generateRandomBase64()})`,
-        `[DEBUG] Refining output...`,
-        `[SYSTEM] Fetching API results from https://api.openai.com/v1/models/gpt-4o`,
-        `[INFO] Almost done...`,
-        `[FINALIZE] Completing analysis...`,
         `[SUCCESS] Processing complete. Output stored at /var/logs/${generateRandomID()}.log`,
       ];
 
@@ -176,10 +172,14 @@
 
 <body>
   <div class="container">
-    <h2>AI Categorization Terminal</h2>
+    <h2>AI Power Dynamics Report</h2>
 
-    <div class="input-box" id="userInput" contenteditable="true">
-      Type your concern here...
+    <div class="input-guide">
+      <p>Describe your experience with institutional power: who was involved, what happened, when, where, and how.</p>
+    </div>
+    <!-- 2. contenteditable 박스에 초기 안내 문구 추가 -->
+    <div class="input-box" id="userInput" contenteditable="true"
+      data-placeholder="Type your concern here: who, what, when, where, how...">
     </div>
 
     <button onclick="submitQuestion()">Check Category</button>
@@ -200,5 +200,6 @@
     </div>
   </div>
 </body>
+
 
 </html>
