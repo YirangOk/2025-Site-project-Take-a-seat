@@ -65,31 +65,35 @@ def home():
     return render_template("index.html")
 
 def categorize_text(user_input):
-    """✅ AI-based text categorization"""
+    system_prompt = """
+You are an AI moderator working in a university setting. Your task is to thoughtfully and empathetically analyze students' personal reports and categorize them based on a predefined set of social and institutional issue types. 
+If a report fits multiple categories, list all that apply and provide a brief explanation for each. 
+If no existing category fits well, suggest a new label and provide a rationale. 
+Use the response format specified below.
+"""
+
+    format_instructions = """
+When replying, follow this format exactly:
+1. Category: <Primary category>
+2. Subcategories: <If multiple, comma-separated>
+3. Reasoning: <One or two sentences explaining your choice>
+4. Advice: <Optional suggestion or next step for the student or administrator>
+"""
+
     try:
         response = client.chat.completions.create(
             model="gpt-4o",
+            temperature=0.7,
             messages=[
-                {
-                    "role": "system",
-                    "content": "You are an AI that classifies user inputs into predefined categories. If the input does not fit any category, return 'New Report Required'."
-                },
-                {
-                    "role": "user",
-                    "content": f"Classify this text into one of the predefined categories: {', '.join(FLATTENED_CATEGORIES)}. If it doesn't fit, return 'New Report Required'. Input: {user_input}"
-                }
+                {"role": "system", "content": system_prompt + format_instructions},
+                {"role": "user", "content": f"Input: {user_input}"}
             ]
         )
-        category = response.choices[0].message.content.strip()
-
-        if category in FLATTENED_CATEGORIES:
-            return category, False  # ✅ Existing category
-        else:
-            return "The student has reported a situation that is of personal and institutional significance but does not match any existing reporting category. The concern appears to involve issues related to student experience, policy enforcement, or interpersonal conflicts that do not fit neatly into the established areas of academic, administrative, or disciplinary matters. Due to the nature of the report, further verification and assessment are required before any institutional action can be considered.", True  # ✅ New report needed
+        return response.choices[0].message.content.strip(), False
 
     except Exception as e:
-        print(f"🚨 OpenAI API Error: {e}")
-        return "Error", True
+        print(f"OpenAI API Error: {e}")
+        return "Error processing request.", True
 
 @app.route("/categorize", methods=["POST"])
 def categorize():
